@@ -1,0 +1,18 @@
+name: DonationTracker
+main: net.simplycrafted.DonationTracker.DonationTracker
+author: Brianetta
+version: 0.1
+commands:
+    donation:
+        description: Record a donation by a player
+        permission: donationtracker.record
+        usage: |
+            /<command> <playername|uuid> <amount>
+permissions:
+    donationtracker.*:
+        description: All DonationTracker permissions
+        children:
+            donationtracker.record: true
+    donationtracker.record:
+        description: Can record donations made by players
+        default: op

@@ -1,0 +1,7 @@
+mysql:
+    hostname: localhost
+    port: 3306
+    database: donationtracker
+    user: donationtracker
+    password: secret
+goals:
