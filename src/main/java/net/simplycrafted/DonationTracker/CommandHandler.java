@@ -1,10 +1,12 @@
 package net.simplycrafted.DonationTracker;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 
 import java.util.UUID;
 
@@ -24,10 +26,13 @@ import java.util.UUID;
  */
 public class CommandHandler implements CommandExecutor {
 
+    String chatPrefix = "" + ChatColor.BOLD + ChatColor.GOLD + "[DC] " + ChatColor.RESET;
+
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Database database = new Database();
         UUID uuid = null;
         Double amount;
+
         if (command.getName().equalsIgnoreCase("donation")) {
             if (args.length == 2) {
                 try {
@@ -49,17 +54,38 @@ public class CommandHandler implements CommandExecutor {
                 }
                 if (uuid == null || amount <= 0.0) {
                     if (uuid == null) {
-                        sender.sendMessage("Could not get UUID for " + args[0]);
+                        sender.sendMessage(chatPrefix + "Could not get UUID for " + args[0]);
                     }
                     if (amount <= 0.-0) {
-                        sender.sendMessage(args[1] + " is not a valid positive number");
+                        sender.sendMessage(chatPrefix + args[1] + " is not a valid positive number");
                     }
                 } else {
                     database.Record(uuid, amount);
-                    sender.sendMessage(String.format("Logged $%.2f against UUID %s",amount,uuid.toString()));
+                    sender.sendMessage(String.format(chatPrefix + "Logged $%.2f against UUID %s",amount,uuid.toString()));
                 }
             } else return false;
+            return true;
         }
-        return true;
+
+        if (command.getName().equalsIgnoreCase("donorgoal")) {
+            if (args.length == 0) {
+                Configuration config = DonationTracker.getInstance().getConfig();
+                // List the goals
+                sender.sendMessage(chatPrefix + "Donation goals:");
+                for (String goal : config.getConfigurationSection("goals").getKeys(false)) {
+                    sender.sendMessage(chatPrefix + String.format("%s: $%.2f in %d days",
+                            goal,
+                            config.getDouble("goals."+goal+".amount"),
+                            config.getInt("goals."+goal+".days"))
+                    );
+                }
+            } else if (args.length == 1) {
+                // Show a goal's details, if it exists
+            } else return false;
+            return true;
+        }
+
+        // This won't be reached
+        return false;
     }
 }

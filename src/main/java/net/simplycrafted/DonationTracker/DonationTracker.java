@@ -29,6 +29,7 @@ public class DonationTracker extends JavaPlugin {
         Database dbtest = new Database();
         if (dbtest.connectionIsDead()) return;
         getCommand("donation").setExecutor(new CommandHandler());
+        getCommand("donorgoal").setExecutor(new CommandHandler());
     }
 
     @Override

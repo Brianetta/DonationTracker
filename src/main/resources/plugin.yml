@@ -7,7 +7,14 @@ commands:
         description: Record a donation by a player
         permission: donationtracker.record
         usage: |
-            /<command> <playername|uuid> <amount>
+            /<command> <player_name|uuid> <amount>
+    donorgoal:
+        description: Configure goals for donors
+        permission: donationtracker.goals
+        usage: |
+            /<command> <goal_name>
+            /<command> <goal_name> <days> <amount>
+            /<command> <goal_name> delete
 permissions:
     donationtracker.*:
         description: All DonationTracker permissions
@@ -15,4 +22,7 @@ permissions:
             donationtracker.record: true
     donationtracker.record:
         description: Can record donations made by players
+        default: op
+    donationtracker.goals:
+        description: Can edit donation goals
         default: op
