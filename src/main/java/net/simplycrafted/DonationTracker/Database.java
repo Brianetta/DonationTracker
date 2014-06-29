@@ -66,18 +66,27 @@ public class Database {
     // Create any tables we need (if they don't exist)
     private void CreateTables() {
         Statement sql;
+        ResultSet result;
         try {
             sql = db_conn.createStatement();
             sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"settings` (" +
                     "setting VARCHAR(10) primary key," +
                     "stringvalue VARCHAR(50)," +
-                    "numericvalue INT(10)" +
+                    "numericvalue DECIMAL(10,2)" +
                     ")");
+            // Check if the database has been marked with a version by this plugin
+            result = sql.executeQuery("SELECT numericvalue FROM `"+prefix+"settings` WHERE setting LIKE 'version'");
+            if (!result.next()) {
+                // The version setting doesn't exist; we probably just made the table, so mark it with our version.
+                sql.executeUpdate("INSERT INTO `"+prefix+"settings` (setting,numericvalue) VALUES ('version','"+ donationtracker.getDescription().getVersion() +"')");
+            }
+            result.close();
             sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"donations` (" +
                     "donationtime TIMESTAMP," +
                     "uuid CHAR(36)," +
                     "amount DECIMAL(10,2)" +
                     ")");
+            sql.close();
         } catch (SQLException exception) {
             donationtracker.getLogger().info(exception.toString());
         }
