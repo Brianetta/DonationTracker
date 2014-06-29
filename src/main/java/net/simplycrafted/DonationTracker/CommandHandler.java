@@ -56,7 +56,7 @@ public class CommandHandler implements CommandExecutor {
                     }
                 } else {
                     database.Record(uuid, amount);
-                    sender.sendMessage(String.format("Logged $%10.2f against UUID %s",amount,uuid.toString()));
+                    sender.sendMessage(String.format("Logged $%.2f against UUID %s",amount,uuid.toString()));
                 }
             } else return false;
         }
