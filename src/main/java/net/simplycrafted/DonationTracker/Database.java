@@ -1,9 +1,8 @@
 package net.simplycrafted.DonationTracker;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.UUID;
 
 /**
  * Copyright © Brian Ronald
@@ -26,6 +25,7 @@ public class Database {
 
     static private Connection db_conn;
     static private DonationTracker donationtracker;
+    private String prefix = "";
 
     // We call this from the constructor, and whenever we find that the database has gone away
     public void Connect () {
@@ -66,13 +66,6 @@ public class Database {
     // Create any tables we need (if they don't exist)
     private void CreateTables() {
         Statement sql;
-        String prefix;
-        if (donationtracker.getConfig().isSet("mysql.prefix")) {
-            prefix = donationtracker.getConfig().getString("mysql.prefix");
-        }
-        else {
-            prefix = "";
-        }
         try {
             sql = db_conn.createStatement();
             sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"settings` (" +
@@ -82,8 +75,8 @@ public class Database {
                     ")");
             sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"donations` (" +
                     "donationtime TIMESTAMP," +
-                    "uuid INT(16)," +
-                    "amount INT(10)" +
+                    "uuid CHAR(36)," +
+                    "amount DECIMAL(10,2)" +
                     ")");
         } catch (SQLException exception) {
             donationtracker.getLogger().info(exception.toString());
@@ -92,13 +85,35 @@ public class Database {
 
     // Constructor
     public Database () {
+        // Set the DonationTracker instance variable
         donationtracker = DonationTracker.getInstance();
+        // Get the table prefix (if there is one)
+        if (donationtracker.getConfig().isSet("mysql.prefix")) {
+            prefix = donationtracker.getConfig().getString("mysql.prefix");
+        } else {
+            prefix = "";
+        }
         // Automatically call Connect() when class is instantiated, and
         // create tables. We assume that if the database connection is
         // already present, then the tables are there too.
         if (db_conn == null) {
             Connect();
             CreateTables();
+        }
+    }
+
+    public void Record(UUID uuid, Double amount) {
+        // Reconnect the database if necessary
+        if (connectionIsDead()) Connect();
+        PreparedStatement sql;
+        try {
+            sql = db_conn.prepareStatement("INSERT INTO `"+prefix+"donations` (donationtime,uuid,amount) VALUES (NOW(),?,?)");
+            sql.setString(1,uuid.toString());
+            sql.setBigDecimal(2, BigDecimal.valueOf(amount));
+            sql.executeUpdate();
+            sql.close();
+        } catch (SQLException exception) {
+            donationtracker.getLogger().info(exception.toString());
         }
     }
 }

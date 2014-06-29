@@ -28,6 +28,7 @@ public class DonationTracker extends JavaPlugin {
         // Bail out now if we have no database
         Database dbtest = new Database();
         if (dbtest.connectionIsDead()) return;
+        getCommand("donation").setExecutor(new CommandHandler());
     }
 
     @Override
