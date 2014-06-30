@@ -56,7 +56,7 @@ public class CommandHandler implements CommandExecutor {
                     if (uuid == null) {
                         sender.sendMessage(chatPrefix + "Could not get UUID for " + args[0]);
                     }
-                    if (amount <= 0.-0) {
+                    if (amount <= 0.0) {
                         sender.sendMessage(chatPrefix + args[1] + " is not a valid positive number");
                     }
                 } else {
