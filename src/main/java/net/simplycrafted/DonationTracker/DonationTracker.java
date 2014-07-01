@@ -34,7 +34,7 @@ public class DonationTracker extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Database.Disconnect();
+        Database.disconnect();
     }
 
     // Lets other classes get a reference to our instance

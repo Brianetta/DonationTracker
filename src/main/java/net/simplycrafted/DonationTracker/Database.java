@@ -1,5 +1,7 @@
 package net.simplycrafted.DonationTracker;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.UUID;
@@ -28,7 +30,7 @@ public class Database {
     private String prefix = "";
 
     // We call this from the constructor, and whenever we find that the database has gone away
-    public void Connect () {
+    public void connect() {
         donationtracker.getLogger().info("Opening MySQL database connection");
         String hostname = donationtracker.getConfig().getString("mysql.hostname");
         int port = donationtracker.getConfig().getInt("mysql.port");
@@ -37,16 +39,16 @@ public class Database {
         String password = donationtracker.getConfig().getString("mysql.password");
         try {
             db_conn = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s", hostname, String.valueOf(port), database, user, password));
-        } catch (Exception exception) {
+        } catch (Exception e) {
             donationtracker.getLogger().info("DonationTracker requires a MySQL database. Couldn't get connected.");
-            donationtracker.getLogger().info(exception.toString());
+            donationtracker.getLogger().info(e.toString());
         }
     }
 
     public boolean connectionIsDead() {
         try {
             db_conn.createStatement().executeQuery("SELECT 1").close();
-        } catch (Exception exception) {
+        } catch (Exception e) {
             donationtracker.getLogger().info("Database connection went wrong");
             return true;
         }
@@ -54,23 +56,23 @@ public class Database {
     }
 
     // Call this once, when the plugin is being disabled. Called statically from onDisable()
-    public static void Disconnect () {
+    public static void disconnect() {
         try {
             donationtracker.getLogger().info("Closing MySQL database connection");
             db_conn.close();
-        } catch (Exception exception) {
+        } catch (Exception e) {
             donationtracker.getLogger().info("Tried to close the connection, but failed (possibly because it's already closed)");
         }
     }
 
     // Create any tables we need (if they don't exist)
-    private void CreateTables() {
+    private void createTables() {
         Statement sql;
         ResultSet result;
         try {
             sql = db_conn.createStatement();
             sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"settings` (" +
-                    "setting VARCHAR(10) primary key," +
+                    "setting VARCHAR(10) PRIMARY KEY," +
                     "stringvalue VARCHAR(50)," +
                     "numericvalue DECIMAL(10,2)" +
                     ")");
@@ -81,14 +83,32 @@ public class Database {
                 sql.executeUpdate("INSERT INTO `"+prefix+"settings` (setting,numericvalue) VALUES ('version','"+ donationtracker.getDescription().getVersion() +"')");
             }
             result.close();
-            sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"donations` (" +
+            sql.executeUpdate("CREATE TABLE IF NOT EXISTS `" + prefix + "donations` (" +
                     "donationtime TIMESTAMP," +
                     "uuid CHAR(36)," +
                     "amount DECIMAL(10,2)" +
                     ")");
+            sql.executeUpdate("CREATE TABLE IF NOT EXISTS `"+prefix+"goalsreached` (" +
+                    "goal VARCHAR(50) PRIMARY KEY," +
+                    "reached ENUM('Y','N') DEFAULT 'N'" +
+                    ")");
             sql.close();
-        } catch (SQLException exception) {
-            donationtracker.getLogger().info(exception.toString());
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
+        }
+    }
+
+    public void initialiseGoals() {
+        ConfigurationSection config = donationtracker.getConfig();
+        PreparedStatement sql;
+        for (String goal : config.getConfigurationSection("goals").getKeys(false)) {
+            try {
+                sql = db_conn.prepareStatement("INSERT IGNORE INTO `"+prefix+"goalsreached` (goal) VALUES (?)");
+                sql.setString(1,goal);
+                sql.executeUpdate();
+            } catch (SQLException e) {
+                donationtracker.getLogger().info(e.toString());
+            }
         }
     }
 
@@ -102,18 +122,19 @@ public class Database {
         } else {
             prefix = "";
         }
-        // Automatically call Connect() when class is instantiated, and
+        // Automatically call connect() when class is instantiated, and
         // create tables. We assume that if the database connection is
         // already present, then the tables are there too.
         if (db_conn == null) {
-            Connect();
-            CreateTables();
+            connect();
+            createTables();
+            initialiseGoals();
         }
     }
 
-    public void Record(UUID uuid, Double amount) {
+    public void recordDonation(UUID uuid, Double amount) {
         // Reconnect the database if necessary
-        if (connectionIsDead()) Connect();
+        if (connectionIsDead()) connect();
         PreparedStatement sql;
         try {
             sql = db_conn.prepareStatement("INSERT INTO `"+prefix+"donations` (donationtime,uuid,amount) VALUES (NOW(),?,?)");
@@ -121,8 +142,8 @@ public class Database {
             sql.setBigDecimal(2, BigDecimal.valueOf(amount));
             sql.executeUpdate();
             sql.close();
-        } catch (SQLException exception) {
-            donationtracker.getLogger().info(exception.toString());
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
         }
     }
 }

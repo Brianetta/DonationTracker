@@ -38,7 +38,7 @@ public class CommandHandler implements CommandExecutor {
                 try {
                     // See if the argument is a UUID
                     uuid = UUID.fromString(args[0]);
-                } catch (IllegalArgumentException exception) {
+                } catch (IllegalArgumentException e) {
                     // If that threw an error, assume it's a name
                     for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                         // Search all the known players
@@ -49,7 +49,7 @@ public class CommandHandler implements CommandExecutor {
                 }
                 try {
                     amount = Double.parseDouble(args[1]);
-                } catch (IllegalArgumentException exception) {
+                } catch (IllegalArgumentException e) {
                     amount = 0.0;
                 }
                 if (uuid == null || amount <= 0.0) {
@@ -60,7 +60,7 @@ public class CommandHandler implements CommandExecutor {
                         sender.sendMessage(chatPrefix + args[1] + " is not a valid positive number");
                     }
                 } else {
-                    database.Record(uuid, amount);
+                    database.recordDonation(uuid, amount);
                     sender.sendMessage(String.format(chatPrefix + "Logged $%.2f against UUID %s",amount,uuid.toString()));
                 }
             } else return false;
@@ -68,19 +68,28 @@ public class CommandHandler implements CommandExecutor {
         }
 
         if (command.getName().equalsIgnoreCase("donorgoal")) {
+            Configuration config = DonationTracker.getInstance().getConfig();
             if (args.length == 0) {
-                Configuration config = DonationTracker.getInstance().getConfig();
                 // List the goals
                 sender.sendMessage(chatPrefix + "Donation goals:");
                 for (String goal : config.getConfigurationSection("goals").getKeys(false)) {
-                    sender.sendMessage(chatPrefix + String.format("%s: $%.2f in %d days",
+                    sender.sendMessage(chatPrefix + String.format("Goal %s: $%.2f in %d days",
                             goal,
                             config.getDouble("goals."+goal+".amount"),
                             config.getInt("goals."+goal+".days"))
                     );
                 }
             } else if (args.length == 1) {
-                // Show a goal's details, if it exists
+                if (config.getConfigurationSection("goals."+args[0]) != null) {
+                    sender.sendMessage(chatPrefix + String.format("Goal %s: $%.2f in %d days",
+                                    args[0],
+                                    config.getDouble("goals."+args[0]+".amount"),
+                                    config.getInt("goals."+args[0]+".days"))
+                    );
+                    // Add effects output here
+                } else {
+                    sender.sendMessage(chatPrefix + "Goal " + args[0] + " not found");
+                }
             } else return false;
             return true;
         }
