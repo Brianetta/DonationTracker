@@ -83,7 +83,7 @@ public class Database {
                 sql.executeUpdate("INSERT INTO `"+prefix+"settings` (setting,numericvalue) VALUES ('version','"+ donationtracker.getDescription().getVersion() +"')");
             }
             result.close();
-            sql.executeUpdate("CREATE TABLE IF NOT EXISTS `" + prefix + "donations` (" +
+            sql.executeUpdate("CREATE TABLE IF NOT EXISTS `" + prefix + "donation` (" +
                     "donationtime TIMESTAMP," +
                     "uuid CHAR(36)," +
                     "amount DECIMAL(10,2)" +
@@ -106,6 +106,7 @@ public class Database {
                 sql = db_conn.prepareStatement("INSERT IGNORE INTO `"+prefix+"goalsreached` (goal) VALUES (?)");
                 sql.setString(1,goal);
                 sql.executeUpdate();
+                sql.close();
             } catch (SQLException e) {
                 donationtracker.getLogger().info(e.toString());
             }
@@ -145,5 +146,27 @@ public class Database {
         } catch (SQLException e) {
             donationtracker.getLogger().info(e.toString());
         }
+    }
+
+    public boolean isGoalReached(int days, int money) {
+        // Reconnect the database if necessary
+        if (connectionIsDead()) connect();
+        Boolean returnval = false;
+        PreparedStatement sql;
+        try {
+            sql = db_conn.prepareStatement("SELECT SUM(amount) " +
+                    "FROM `" + prefix + "donation`" +
+                    "WHERE donationtime >= DATE_SUB(NOW(),INTERVAL ? DAY)");
+            sql.setInt(1,days);
+            ResultSet resultSet = sql.executeQuery();
+            if(resultSet.next()) {
+                returnval = (resultSet.getInt(1) > money) ;
+            }
+            resultSet.close();
+            sql.close();
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
+        }
+        return returnval;
     }
 }

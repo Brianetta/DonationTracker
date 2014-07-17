@@ -1,6 +1,9 @@
 package net.simplycrafted.DonationTracker;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
 
 /**
  * Copyright © Brian Ronald
@@ -21,6 +24,9 @@ public class DonationTracker extends JavaPlugin {
     // Our only instance
     private static DonationTracker donationtracker;
 
+    // List of instantiated goals
+    private HashMap <String, Goal> goals;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -30,6 +36,12 @@ public class DonationTracker extends JavaPlugin {
         if (dbtest.connectionIsDead()) return;
         getCommand("donation").setExecutor(new CommandHandler());
         getCommand("donorgoal").setExecutor(new CommandHandler());
+        // Load the goals from the config file
+        ConfigurationSection configurationSection;
+        for (String key : getConfig().getKeys(false)) {
+            configurationSection = getConfig().getConfigurationSection(key);
+            goals.put(key, new Goal(configurationSection));
+        }
     }
 
     @Override
