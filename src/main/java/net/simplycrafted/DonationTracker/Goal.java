@@ -3,7 +3,8 @@ package net.simplycrafted.DonationTracker;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Copyright © Brian Ronald
@@ -36,8 +37,8 @@ public class Goal {
         public String[] args;
     }
 
-    private List<Command> commandsOnEnabled;
-    private List<Command> commandsOnDisabled;
+    private Set<Command> commandsOnEnabled = new HashSet<>();
+    private Set<Command> commandsOnDisabled = new HashSet<>();
 
     // Constructor
     public Goal(ConfigurationSection goalConfig) {
