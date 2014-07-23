@@ -138,7 +138,7 @@ public class Database {
         if (connectionIsDead()) connect();
         PreparedStatement sql;
         try {
-            sql = db_conn.prepareStatement("INSERT INTO `"+prefix+"donations` (donationtime,uuid,amount) VALUES (NOW(),?,?)");
+            sql = db_conn.prepareStatement("INSERT INTO `"+prefix+"donation` (donationtime,uuid,amount) VALUES (NOW(),?,?)");
             sql.setString(1,uuid.toString());
             sql.setBigDecimal(2, BigDecimal.valueOf(amount));
             sql.executeUpdate();
@@ -168,5 +168,41 @@ public class Database {
             donationtracker.getLogger().info(e.toString());
         }
         return returnval;
+    }
+
+    public boolean rewardsAreEnabled(String name) {
+        if (connectionIsDead()) connect();
+        Boolean returnval = false;
+        PreparedStatement sql;
+        try {
+            sql = db_conn.prepareStatement("SELECT reached FROM goalsreached" +
+                    "WHERE goal LIKE ?");
+            sql.setString(1,name);
+            ResultSet resultset = sql.executeQuery();
+            if(resultset.next()) {
+                returnval = (resultset.getString(1).equals("Y"));
+            }
+            resultset.close();
+            sql.close();
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
+        }
+        return returnval;
+    }
+
+    public void recordReward(String goalname, boolean reached) {
+        if (connectionIsDead()) connect();
+        PreparedStatement sql;
+        try {
+            sql = db_conn.prepareStatement("UPDATE goalsreached" +
+                    "SET reached = ?" +
+                    "WHERE goal LIKE ?");
+            sql.setString(1, reached ? "Y" : "N");
+            sql.setString(2, goalname);
+            sql.executeUpdate();
+            sql.close();
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
+        }
     }
 }

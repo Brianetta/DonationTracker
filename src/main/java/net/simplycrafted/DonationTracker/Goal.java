@@ -3,7 +3,6 @@ package net.simplycrafted.DonationTracker;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -29,6 +28,7 @@ public class Goal {
     static private DonationTracker donationtracker;
     private int days;
     private int money;
+    private String name;
 
     private class Command {
         // Simple container for a command name and its arguments
@@ -49,6 +49,7 @@ public class Goal {
 
         days = goalConfig.getInt("days");
         money = goalConfig.getInt("amount");
+        name = goalConfig.getName();
         // Build lists of Commands to be run when enabled
         for (String commandString : goalConfig.getStringList("enable")) {
             command = new Command();
@@ -66,18 +67,30 @@ public class Goal {
     }
 
     public void enable() {
-        // Enable rewards
-        for (Command command : commandsOnEnabled) {
-            PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
-            if (pluginCommand != null) {
-                pluginCommand.execute(donationtracker.getServer().getConsoleSender(),command.arg0,command.args);
-            } else {
-                donationtracker.getLogger().info("Invalid command: " + command.arg0);
-            }
+        Database database = new Database();
+        // Check whether rewards have been enabled
+        if (database.rewardsAreEnabled(this.name)) {
+            return;
         }
+            // Enable rewards
+            for (Command command : commandsOnEnabled) {
+                PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
+                if (pluginCommand != null) {
+                    pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
+                } else {
+                    donationtracker.getLogger().info("Invalid command: " + command.arg0);
+                }
+            }
+        // Record that rewards have been enabled
+        database.recordReward(this.name,true);
     }
 
     public void abandon() {
+        Database database = new Database();
+        // Check whether rewards have been disabled
+        if (!database.rewardsAreEnabled(this.name)) {
+            return;
+        }
         // Disable rewards
         for (Command command : commandsOnDisabled) {
             PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
@@ -87,6 +100,8 @@ public class Goal {
                 donationtracker.getLogger().info("Invalid command: " + command.arg0);
             }
         }
+        // Record that rewards have been disabled
+        database.recordReward(this.name,false);
     }
 
     public boolean reached() {
