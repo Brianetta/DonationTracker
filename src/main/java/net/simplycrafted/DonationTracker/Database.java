@@ -138,7 +138,7 @@ public class Database {
         if (connectionIsDead()) connect();
         PreparedStatement sql;
         try {
-            sql = db_conn.prepareStatement("INSERT INTO `"+prefix+"donation` (donationtime,uuid,amount) VALUES (NOW(),?,?)");
+            sql = db_conn.prepareStatement("INSERT INTO `" + prefix + "donation` (donationtime,uuid,amount) VALUES (NOW(),?,?)");
             sql.setString(1,uuid.toString());
             sql.setBigDecimal(2, BigDecimal.valueOf(amount));
             sql.executeUpdate();
@@ -155,7 +155,7 @@ public class Database {
         PreparedStatement sql;
         try {
             sql = db_conn.prepareStatement("SELECT SUM(amount) " +
-                    "FROM `" + prefix + "donation`" +
+                    "FROM `" + prefix + "donation` " +
                     "WHERE donationtime >= DATE_SUB(NOW(),INTERVAL ? DAY)");
             sql.setInt(1,days);
             ResultSet resultSet = sql.executeQuery();
@@ -175,7 +175,8 @@ public class Database {
         Boolean returnval = false;
         PreparedStatement sql;
         try {
-            sql = db_conn.prepareStatement("SELECT reached FROM goalsreached" +
+            sql = db_conn.prepareStatement("SELECT reached " +
+                    "FROM `" + prefix + "goalsreached` " +
                     "WHERE goal LIKE ?");
             sql.setString(1,name);
             ResultSet resultset = sql.executeQuery();
@@ -194,7 +195,7 @@ public class Database {
         if (connectionIsDead()) connect();
         PreparedStatement sql;
         try {
-            sql = db_conn.prepareStatement("UPDATE goalsreached" +
+            sql = db_conn.prepareStatement("UPDATE `" + prefix + "goalsreached` " +
                     "SET reached = ?" +
                     "WHERE goal LIKE ?");
             sql.setString(1, reached ? "Y" : "N");
@@ -204,5 +205,20 @@ public class Database {
         } catch (SQLException e) {
             donationtracker.getLogger().info(e.toString());
         }
+    }
+
+    public void dbg_advance(Integer days) {
+        if (connectionIsDead()) connect();
+        PreparedStatement sql;
+        try {
+            sql = db_conn.prepareStatement("UPDATE `" + prefix + "donation` " +
+                    "SET donationtime = DATE_SUB(donationtime,INTERVAL ? DAY) ");
+            sql.setInt(1, days);
+            sql.executeUpdate();
+            sql.close();
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
+        }
+
     }
 }

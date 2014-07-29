@@ -31,6 +31,10 @@ public class Goal {
     private int money;
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
     private class Command {
         // Simple container for a command name and its arguments
         public String arg0;
@@ -51,17 +55,20 @@ public class Goal {
         days = goalConfig.getInt("days");
         money = goalConfig.getInt("amount");
         name = goalConfig.getName();
+
+        donationtracker.getLogger().info("Instantiating goal: " + name);
+
         // Build lists of Commands to be run when enabled
         for (String commandString : goalConfig.getStringList("enable")) {
             command = new Command();
-            command.arg0 = commandString.substring(1, commandString.indexOf(' '));
+            command.arg0 = commandString.substring(0, commandString.indexOf(' '));
             command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
             commandsOnEnabled.add(command);
         }
         // Build lists of Commands to be run when disabled
         for (String commandString : goalConfig.getStringList("disable")) {
             command = new Command();
-            command.arg0 = commandString.substring(1, commandString.indexOf(' '));
+            command.arg0 = commandString.substring(0, commandString.indexOf(' '));
             command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
             commandsOnDisabled.add(command);
         }
@@ -73,8 +80,9 @@ public class Goal {
         if (database.rewardsAreEnabled(this.name)) {
             return;
         }
-            // Enable rewards
-            for (Command command : commandsOnEnabled) {
+        // Enable rewards
+        donationtracker.getLogger().info("Enabling rewards: " + name);
+        for (Command command : commandsOnEnabled) {
                 PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
                 if (pluginCommand != null) {
                     pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
@@ -93,6 +101,7 @@ public class Goal {
             return;
         }
         // Disable rewards
+        donationtracker.getLogger().info("Disabling rewards: " + name);
         for (Command command : commandsOnDisabled) {
             PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
             if (pluginCommand != null) {

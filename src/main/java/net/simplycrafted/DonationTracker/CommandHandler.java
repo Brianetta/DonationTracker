@@ -8,6 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -92,6 +94,40 @@ public class CommandHandler implements CommandExecutor {
                 }
             } else return false;
             return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("ddbg")) {
+            // Debugging and testing only - to be removed before release
+            if (args.length > 0) {
+                if (args[0].equalsIgnoreCase("advance")) {
+                    if (args.length > 1) {
+                        try {
+                            database.dbg_advance(Integer.valueOf(args[1]));
+                        } catch (Exception e) {
+                            sender.sendMessage("Bad number.");
+                        }
+                        return true;
+                    } else {
+                        return true;
+                    }
+                } else if (args[0].equalsIgnoreCase("assess")) {
+                    // Iterate over all the goals
+                    for(Goal goal : DonationTracker.getInstance().goals)
+                    {
+                        DonationTracker.getInstance().getLogger().info("Assessing " + goal.getName());
+                        if (goal.reached()) {
+                            goal.enable();
+                        } else {
+                            goal.abandon();
+                        }
+                    }
+                    return true;
+                } else {
+                    sender.sendMessage("Unknown debug command.");
+                }
+            } else {
+                return false;
+            }
         }
 
         // This won't be reached

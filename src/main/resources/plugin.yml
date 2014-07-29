@@ -15,6 +15,10 @@ commands:
             /<command> <goal_name>
             /<command> <goal_name> <days> <amount>
             /<command> <goal_name> delete
+    ddbg:
+        description: debug command (development only)
+        permission: donationtracker.record
+        usage: Ask Brian
 permissions:
     donationtracker.*:
         description: All DonationTracker permissions
