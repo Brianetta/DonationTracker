@@ -27,6 +27,19 @@ public class DonationTracker extends JavaPlugin {
     // List of instantiated goals
     Set<Goal> goals;
 
+    // Determine which goals need to be rewarded or otherwise
+    public void assess() {
+        for(Goal goal : goals)
+        {
+            getLogger().info("Assessing " + goal.getName());
+            if (goal.reached()) {
+                goal.enable();
+            } else {
+                goal.abandon();
+            }
+        }
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();

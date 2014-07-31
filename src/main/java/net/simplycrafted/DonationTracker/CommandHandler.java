@@ -112,15 +112,7 @@ public class CommandHandler implements CommandExecutor {
                     }
                 } else if (args[0].equalsIgnoreCase("assess")) {
                     // Iterate over all the goals
-                    for(Goal goal : DonationTracker.getInstance().goals)
-                    {
-                        DonationTracker.getInstance().getLogger().info("Assessing " + goal.getName());
-                        if (goal.reached()) {
-                            goal.enable();
-                        } else {
-                            goal.abandon();
-                        }
-                    }
+                    DonationTracker.getInstance().assess();
                     return true;
                 } else {
                     sender.sendMessage("Unknown debug command.");
@@ -133,4 +125,6 @@ public class CommandHandler implements CommandExecutor {
         // This won't be reached
         return false;
     }
+
+
 }
