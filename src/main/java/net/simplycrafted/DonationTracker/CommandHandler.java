@@ -65,6 +65,8 @@ public class CommandHandler implements CommandExecutor {
                 } else {
                     database.recordDonation(uuid, amount);
                     sender.sendMessage(String.format(chatPrefix + "Logged $%.2f against UUID %s",amount,uuid.toString()));
+                    // Have the plugin re-test all goals now
+                    DonationTracker.getInstance().assess();
                 }
             } else return false;
             return true;
