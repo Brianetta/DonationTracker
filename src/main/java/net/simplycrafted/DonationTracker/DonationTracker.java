@@ -2,6 +2,7 @@ package net.simplycrafted.DonationTracker;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.*;
 
@@ -63,6 +64,7 @@ public class DonationTracker extends JavaPlugin {
         getCommand("donation").setExecutor(commandHandler);
         getCommand("donorgoal").setExecutor(commandHandler);
         getCommand("ddbg").setExecutor(commandHandler);
+
         // Load the goals from the config file
         ConfigurationSection goalConfig;
         ConfigurationSection goalsConfig = getConfig().getConfigurationSection("goals");
@@ -74,6 +76,15 @@ public class DonationTracker extends JavaPlugin {
             }
             goals.add(goal);
         }
+
+        // Schedule a checker to examine these goals periodically
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(this,new Runnable() {
+            @Override
+            public void run() {
+                assess();
+            }
+        },100,getConfig().getInt("period"));
     }
 
     @Override
