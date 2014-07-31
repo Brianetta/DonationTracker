@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -82,13 +83,19 @@ public class CommandHandler implements CommandExecutor {
                     );
                 }
             } else if (args.length == 1) {
-                if (config.getConfigurationSection("goals."+args[0]) != null) {
+                ConfigurationSection goalConfig = config.getConfigurationSection("goals."+args[0]);
+                if (goalConfig != null) {
                     sender.sendMessage(chatPrefix + String.format("Goal %s: $%.2f in %d days",
                                     args[0],
-                                    config.getDouble("goals."+args[0]+".amount"),
-                                    config.getInt("goals."+args[0]+".days"))
+                                    goalConfig.getDouble("amount"),
+                                    goalConfig.getInt("days"))
                     );
-                    // Add effects output here
+                    for (String commandToEnable : goalConfig.getStringList("enable")) {
+                        sender.sendMessage(chatPrefix + "Reward: " + ChatColor.WHITE + commandToEnable);
+                    }
+                    for (String commandToDisable : goalConfig.getStringList("disable")) {
+                        sender.sendMessage(chatPrefix + "Withdraw: " + ChatColor.WHITE + commandToDisable);
+                    }
                 } else {
                     sender.sendMessage(chatPrefix + "Goal " + args[0] + " not found");
                 }
@@ -113,6 +120,10 @@ public class CommandHandler implements CommandExecutor {
                 } else if (args[0].equalsIgnoreCase("assess")) {
                     // Iterate over all the goals
                     DonationTracker.getInstance().assess();
+                    return true;
+                } else if (args[0].equalsIgnoreCase("withdraw")) {
+                    // Iterate over all the goals
+                    DonationTracker.getInstance().withdraw();
                     return true;
                 } else {
                     sender.sendMessage("Unknown debug command.");

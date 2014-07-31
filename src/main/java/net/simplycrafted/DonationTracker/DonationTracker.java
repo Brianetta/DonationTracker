@@ -40,6 +40,17 @@ public class DonationTracker extends JavaPlugin {
         }
     }
 
+    // Withdraw all rewards (used when closing down the plugin).
+    public void withdraw() {
+        for(Goal goal : goals)
+        {
+            if (goal.reached()) {
+                getLogger().info("Abandoning " + goal.getName());
+                goal.abandon();
+            }
+        }
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -67,6 +78,7 @@ public class DonationTracker extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        withdraw();
         Database.disconnect();
     }
 
