@@ -9,8 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.UUID;
 
 /**
