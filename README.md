@@ -126,3 +126,11 @@ The goals need to be added. Here's what the config looks like with two goals add
 ## Reconfiguring ##
 
 Until the plugin is complete, for testing purposes it will be necessary to us Plugin Manager to unload the plugin (`/pm unload DOnationTracker`), edit or replace the config file, then re-load the plugin (`/pm load DOnationTracker-1.0`).
+
+## Permissions ##
+
+`donationtracker.record` lets a player record donations using `/donation`.
+
+`donationtracker.goals` lets a player view or amend goals.
+
+Console has everything.
