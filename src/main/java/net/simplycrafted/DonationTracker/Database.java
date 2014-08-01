@@ -160,7 +160,7 @@ public class Database {
             sql.setInt(1,days);
             ResultSet resultSet = sql.executeQuery();
             if(resultSet.next()) {
-                returnval = (resultSet.getInt(1) > money) ;
+                returnval = (resultSet.getInt(1) >= money) ;
             }
             resultSet.close();
             sql.close();
