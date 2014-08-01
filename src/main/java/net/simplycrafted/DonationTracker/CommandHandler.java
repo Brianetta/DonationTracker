@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -63,7 +64,19 @@ public class CommandHandler implements CommandExecutor {
                 } else {
                     database.recordDonation(uuid, amount);
                     sender.sendMessage(String.format(chatPrefix + "Logged $%.2f against UUID %s",amount,uuid.toString()));
+
+                    // Get the donationthanks command from the config and, um, run it...
+                    String thankCommand = DonationTracker.getInstance().getConfig().getString("donationthanks");
+                    thankCommand = thankCommand.replaceFirst("PLAYER", DonationTracker.getInstance().getServer().getOfflinePlayer(uuid).getName()).replaceFirst("AMOUNT", amount.toString());
+                    String tcarg0 = thankCommand.substring(0, thankCommand.indexOf(' '));
+                    String[] tcargs = thankCommand.substring(thankCommand.indexOf(' ') + 1).split(" ");
                     // Have the plugin re-test all goals now
+                    PluginCommand pluginCommand = DonationTracker.getInstance().getServer().getPluginCommand(tcarg0);
+                    if (pluginCommand != null) {
+                        pluginCommand.execute(DonationTracker.getInstance().getServer().getConsoleSender(), tcarg0, tcargs);
+                    } else {
+                        DonationTracker.getInstance().getLogger().info("Invalid command: " + tcarg0);
+                    }
                     DonationTracker.getInstance().assess();
                 }
             } else return false;

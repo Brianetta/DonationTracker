@@ -26,16 +26,22 @@ public class DonationTracker extends JavaPlugin {
     private static DonationTracker donationtracker;
 
     // List of instantiated goals
-    Set<Goal> goals;
+    Map<String,Goal> goals;
+    Map<String,Goal> goalsBackwards;
 
     // Determine which goals need to be rewarded or otherwise
     public void assess() {
-        for(Goal goal : goals)
+        for(String key: goals.keySet())
         {
-            getLogger().info("Assessing " + goal.getName());
+            Goal goal = goals.get(key);
             if (goal.reached()) {
                 goal.enable();
-            } else {
+            }
+        }
+        for(String key: goalsBackwards.keySet())
+        {
+            Goal goal = goalsBackwards.get(key);
+            if (!goal.reached()) {
                 goal.abandon();
             }
         }
@@ -43,8 +49,9 @@ public class DonationTracker extends JavaPlugin {
 
     // Withdraw all rewards (used when closing down the plugin).
     public void withdraw() {
-        for(Goal goal : goals)
+        for(String key: goals.keySet())
         {
+            Goal goal = goals.get(key);
             if (goal.reached()) {
                 getLogger().info("Abandoning " + goal.getName());
                 goal.abandon();
@@ -56,7 +63,8 @@ public class DonationTracker extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         donationtracker = this;
-        goals = new HashSet<>();
+        goals = new TreeMap<>();
+        goalsBackwards = new TreeMap<String,Goal>(Collections.reverseOrder());
         // Bail out now if we have no database
         Database dbtest = new Database();
         if (dbtest.connectionIsDead()) return;
@@ -74,7 +82,8 @@ public class DonationTracker extends JavaPlugin {
             if (goal.reached()) {
                 getLogger().info("...reached");
             }
-            goals.add(goal);
+            goals.put(key, goal);
+            goalsBackwards.put(key, goal);
         }
 
         // Schedule a checker to examine these goals periodically

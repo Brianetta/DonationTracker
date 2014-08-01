@@ -5,4 +5,5 @@ mysql:
     user: donationtracker
     password: secret
 period: 12000
+donationthanks: bc Thanks to PLAYER for donating $AMOUNT to the server!
 goals:
