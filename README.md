@@ -123,4 +123,6 @@ The goals need to be added. Here's what the config looks like with two goals add
                 - bc Chest shops disabled!
                 - pex group Player remove ChestShop.shop.create.*
 
-Simple.
+## Reconfiguring ##
+
+Until the plugin is complete, for testing purposes it will be necessary to us Plugin Manager to unload the plugin (`/pm unload DOnationTracker`), edit or replace the config file, then re-load the plugin (`/pm load DOnationTracker-1.0`).
