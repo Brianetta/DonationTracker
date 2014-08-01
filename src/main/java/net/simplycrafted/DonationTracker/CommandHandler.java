@@ -138,6 +138,10 @@ public class CommandHandler implements CommandExecutor {
                     // Iterate over all the goals
                     DonationTracker.getInstance().withdraw();
                     return true;
+                } else if (args[0].equalsIgnoreCase("reload")) {
+                    // Reload the plugin
+                    DonationTracker.getInstance().reload();
+                    return true;
                 } else {
                     sender.sendMessage("Unknown debug command.");
                 }

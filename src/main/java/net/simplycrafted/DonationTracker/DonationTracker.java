@@ -107,4 +107,22 @@ public class DonationTracker extends JavaPlugin {
         return donationtracker;
     }
 
+    public void reload() {
+        withdraw();
+        goals = new TreeMap<>();
+        goalsBackwards = new TreeMap<String,Goal>(Collections.reverseOrder());
+        reloadConfig();
+        ConfigurationSection goalConfig;
+        ConfigurationSection goalsConfig = getConfig().getConfigurationSection("goals");
+        for (String key : goalsConfig.getKeys(false)) {
+            goalConfig = goalsConfig.getConfigurationSection(key);
+            Goal goal = new Goal (goalConfig);
+            if (goal.reached()) {
+                getLogger().info("...reached");
+            }
+            goals.put(key, goal);
+            goalsBackwards.put(key, goal);
+        }
+        assess();
+    }
 }
