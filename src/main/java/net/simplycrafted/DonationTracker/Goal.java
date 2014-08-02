@@ -27,9 +27,9 @@ import java.util.Set;
 // the number falls short, the effects are abandoned.
 public class Goal {
     static private DonationTracker donationtracker;
-    private int days;
-    private int money;
-    private String name;
+    int days;
+    int money;
+    String name;
 
     public String getName() {
         return name;
