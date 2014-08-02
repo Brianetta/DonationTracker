@@ -108,10 +108,14 @@ public class DonationTracker extends JavaPlugin {
     }
 
     public void reload() {
+        // Withdraw all goal rewards
         withdraw();
+        // Re-initialise the goal hashes
         goals = new TreeMap<>();
         goalsBackwards = new TreeMap<String,Goal>(Collections.reverseOrder());
+        // Grab a new config
         reloadConfig();
+        // Re-populate the goal hashes
         ConfigurationSection goalConfig;
         ConfigurationSection goalsConfig = getConfig().getConfigurationSection("goals");
         for (String key : goalsConfig.getKeys(false)) {
@@ -123,6 +127,7 @@ public class DonationTracker extends JavaPlugin {
             goals.put(key, goal);
             goalsBackwards.put(key, goal);
         }
+        // re-assess all goals, and reward
         assess();
     }
 }
