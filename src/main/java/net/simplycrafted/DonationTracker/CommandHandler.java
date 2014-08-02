@@ -96,7 +96,7 @@ public class CommandHandler implements CommandExecutor {
                     );
                 }
             } else if (args.length == 1) {
-                ConfigurationSection goalConfig = config.getConfigurationSection("goals."+args[0]);
+                ConfigurationSection goalConfig = config.getConfigurationSection("goals." + args[0]);
                 if (goalConfig != null) {
                     sender.sendMessage(chatPrefix + String.format("Goal %s: $%.2f in %d days",
                                     args[0],
@@ -111,6 +111,40 @@ public class CommandHandler implements CommandExecutor {
                     }
                 } else {
                     sender.sendMessage(chatPrefix + "Goal " + args[0] + " not found");
+                }
+            } else if ((args.length > 1) && (args[1].toLowerCase().matches("^(amount|days|enable|disable|clear)$"))) {
+                ConfigurationSection goalConfig = config.getConfigurationSection("goals." + args[0]);
+                if (goalConfig == null) {
+                }
+                if (args.length > 2) {
+                    if (args[1].equalsIgnoreCase("amount")) {
+
+                    } else if (args[1].equalsIgnoreCase("days")) {
+
+                    } else if (args[1].equalsIgnoreCase("enable")) {
+
+                    } else if (args[1].equalsIgnoreCase("disable")) {
+
+                    } else if (args[1].equalsIgnoreCase("clear")) {
+
+                    }
+                } else {
+                    if (args[1].equalsIgnoreCase("amount")) {
+                        sender.sendMessage("You must specify an amount in dollars");
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("days")) {
+                        sender.sendMessage("You must specify a period in whole days");
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("enable")) {
+                        sender.sendMessage("You must specify a command to run when enabled");
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("disable")) {
+                        sender.sendMessage("You must specify a command to run when disabled");
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("clear")) {
+                        // Clear the whole goal
+                        return true;
+                    }
                 }
             } else return false;
             return true;
