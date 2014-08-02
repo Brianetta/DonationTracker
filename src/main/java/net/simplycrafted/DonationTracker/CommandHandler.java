@@ -112,7 +112,7 @@ public class CommandHandler implements CommandExecutor {
                         sender.sendMessage(chatPrefix + "Withdraw: " + ChatColor.WHITE + commandToDisable);
                     }
                 } else {
-                    sender.sendMessage(chatPrefix + "Goal " + goalName + " not found");
+                    sender.sendMessage(chatPrefix + "Goal " + goalName + " not found. You can create it by setting days or amount");
                 }
             } else if ((args.length > 1) && (args[1].toLowerCase().matches("^(amount|days|enable|disable|clear)$"))) {
                 String goalName = args[0];
@@ -133,10 +133,12 @@ public class CommandHandler implements CommandExecutor {
                                 Goal goal = donationtracker.goals.get(goalName);
                                 if (goal == null) {
                                     sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
+                                    sender.sendMessage(chatPrefix + "Amount: $" + amount);
                                     goal = new Goal(goalConfig);
                                     donationtracker.goals.put(goalName,goal);
                                     donationtracker.goalsBackwards.put(goalName,goal);
                                 } else {
+                                    sender.sendMessage(chatPrefix + "Amount: $" + amount);
                                     goal.money = amount;
                                 }
                             }
@@ -154,10 +156,12 @@ public class CommandHandler implements CommandExecutor {
                                 Goal goal = donationtracker.goals.get(goalName);
                                 if (goal == null) {
                                     sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
+                                    sender.sendMessage(chatPrefix + "Days: " + days);
                                     goal = new Goal(goalConfig);
                                     donationtracker.goals.put(goalName,goal);
                                     donationtracker.goalsBackwards.put(goalName,goal);
                                 } else {
+                                    sender.sendMessage(chatPrefix + "Days: " + days);
                                     goal.days = days;
                                 }
                             }
