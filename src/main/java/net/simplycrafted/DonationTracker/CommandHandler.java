@@ -118,6 +118,7 @@ public class CommandHandler implements CommandExecutor {
                 String goalName = args[0];
                 ConfigurationSection goalConfig = config.getConfigurationSection("goals." + goalName);
                 if (goalConfig == null) {
+                    goalConfig = config.createSection("goals." + goalName);
                 }
                 if (args.length > 2) {
                     if (args[1].equalsIgnoreCase("amount")) {
