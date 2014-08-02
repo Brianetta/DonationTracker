@@ -71,6 +71,10 @@ This command causes the plugin to re-assess all the goals. It is run every ten m
 
 This command causes all the goals to be abandoned, as if there have been no donations at all. Each goal that has been reached will be considered lost, and its disable commands will be run. It can be un-done with `/ddbg assess`, since it doesn't touch the actual donations. It is run whenever the plugin is disabled, to allow changes to be made to the configuration in safety.
 
+    /ddbg reload
+
+This command causes the plugin to unload all goals, reload the configuration from disk, and re-initialise all internal storage with new goal information from the newly loaded configuration.
+
 ### Future commands ###
 
 We need commands to reload the config on the fly, as well as interrogation commands to find out where the pot is over the last *n* days, and who was the biggest donator over the last *n* days.
