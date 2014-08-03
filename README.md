@@ -42,15 +42,39 @@ The second is the amount donated by that player, in dollars (or dollars and cent
 
 ### /donorgoal ###
 
-This command lists goals, and if given a goal name will list the commands that goal will run.
-
-Ultimately, this command will also be used to configure or remove goals on the fly. For now, though, it is just informative.
+This command lists goals, and if given a goal name will list the commands that goal will run, and allow them to be edited.
 
 **Examples**
 
+List all goals:
+
     /donorgoal
     
+Show details of a goal called chestshops:
+
     /donorgoal chestshops
+
+Alter the number of days of the chestshops goal to 30:
+
+    /donorgoal chestshops days 30
+
+Alter the donation amount required for the chestshops goal to $50:
+
+    /donorgoal chestshops amount 50
+
+Add an enable command to chestshops, announcing it:
+
+    /donorgoal chestshops enable bc Chestshops enabled!
+
+Add a disable command to chestshops, announcing its removal:
+
+    /donorgoal chestshops disable bc Chestshops disabled :-(
+
+Totally delete the chestshops goal:
+
+    /donorgoal chestshops clear
+
+**You can create a new goal be specifying either a donation amount or a number of days.**
 
 ### /ddbg ###
 
@@ -74,6 +98,10 @@ This command causes all the goals to be abandoned, as if there have been no dona
     /ddbg reload
 
 This command causes the plugin to unload all goals, reload the configuration from disk, and re-initialise all internal storage with new goal information from the newly loaded configuration.
+
+    /ddbg save
+
+This immediately writes the plugin's config file to disk. It shouldn't be needed, since the plugin does this itself every time it makes changes.
 
 ### Future commands ###
 
