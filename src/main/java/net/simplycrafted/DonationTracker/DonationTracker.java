@@ -64,7 +64,7 @@ public class DonationTracker extends JavaPlugin {
         saveDefaultConfig();
         donationtracker = this;
         goals = new TreeMap<>();
-        goalsBackwards = new TreeMap<String,Goal>(Collections.reverseOrder());
+        goalsBackwards = new TreeMap<>(Collections.reverseOrder());
         // Bail out now if we have no database
         Database dbtest = new Database();
         if (dbtest.connectionIsDead()) return;
@@ -112,7 +112,7 @@ public class DonationTracker extends JavaPlugin {
         withdraw();
         // Re-initialise the goal hashes
         goals = new TreeMap<>();
-        goalsBackwards = new TreeMap<String,Goal>(Collections.reverseOrder());
+        goalsBackwards = new TreeMap<>(Collections.reverseOrder());
         // Grab a new config
         reloadConfig();
         // Re-populate the goal hashes
