@@ -171,6 +171,29 @@ public class Database {
         return returnval;
     }
 
+    public double getPool(int days) {
+        // Reconnect the database if necessary
+        if (connectionIsDead()) connect();
+        PreparedStatement sql;
+        double returnval = 0;
+        try {
+            sql = db_conn.prepareStatement("SELECT SUM(amount) " +
+                    "FROM `" + prefix + "donation` " +
+                    // Add WHERE clause only if days > 0. Zero now means "ever", and would ordinarily be meaningless.
+                    (days > 0 ? "WHERE donationtime >= DATE_SUB(NOW(),INTERVAL ? DAY)" : ""));
+            if (days > 0) sql.setInt(1,days);
+            ResultSet resultSet = sql.executeQuery();
+            if(resultSet.next()) {
+                returnval = resultSet.getDouble(1);
+            }
+            resultSet.close();
+            sql.close();
+        } catch (SQLException e) {
+            donationtracker.getLogger().info(e.toString());
+        }
+        return returnval;
+    }
+
     public boolean rewardsAreEnabled(String name) {
         if (connectionIsDead()) connect();
         Boolean returnval = false;
