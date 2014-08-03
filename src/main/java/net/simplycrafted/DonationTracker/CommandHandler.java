@@ -130,7 +130,6 @@ public class CommandHandler implements CommandExecutor {
                                 sender.sendMessage(chatPrefix + "Amount must be a positive number");
                             } else {
                                 goalConfig.set("amount", amount);
-                                donationtracker.getConfig().set("goals." + goalName + ".amount", amount);
                                 donationtracker.saveConfig();
                                 Goal goal = donationtracker.goals.get(goalName);
                                 if (goal == null) {
@@ -154,7 +153,6 @@ public class CommandHandler implements CommandExecutor {
                                 sender.sendMessage(chatPrefix + "Amount must be a positive number");
                             } else {
                                 goalConfig.set("days", days);
-                                donationtracker.getConfig().set("goals." + goalName + ".days", days);
                                 donationtracker.saveConfig();
                                 Goal goal = donationtracker.goals.get(goalName);
                                 if (goal == null) {
@@ -179,10 +177,9 @@ public class CommandHandler implements CommandExecutor {
                                 stringBuilder.append(" ");
                             }
                         }
-                        List<String> enableCommands =donationtracker.getConfig().getStringList("enable");
+                        List<String> enableCommands = goalConfig.getStringList("enable");
                         enableCommands.add(stringBuilder.toString());
                         goalConfig.set("enable", enableCommands);
-                        donationtracker.getConfig().set("enable", enableCommands);
                         donationtracker.saveConfig();
                         sender.sendMessage(chatPrefix + "Command added to goal's enable list in config. Check days and amount, then reload config to enact changes.");
                     } else if (args[1].equalsIgnoreCase("disable")) {
@@ -193,14 +190,13 @@ public class CommandHandler implements CommandExecutor {
                                 stringBuilder.append(" ");
                             }
                         }
-                        List<String> disableCommands =donationtracker.getConfig().getStringList("disable");
+                        List<String> disableCommands = goalConfig.getStringList("disable");
                         disableCommands.add(stringBuilder.toString());
                         goalConfig.set("disable", disableCommands);
-                        donationtracker.getConfig().set("disable", disableCommands);
                         donationtracker.saveConfig();
                         sender.sendMessage(chatPrefix + "Command added to goal's disable list in config. Check days and amount, then reload config to enact changes.");
                     } else if (args[1].equalsIgnoreCase("clear")) {
-
+                        sender.sendMessage(chatPrefix + "The clear command doesn't have any options yet.");
                     }
                 } else {
                     if (args[1].equalsIgnoreCase("amount")) {
@@ -212,7 +208,12 @@ public class CommandHandler implements CommandExecutor {
                     } else if (args[1].equalsIgnoreCase("disable")) {
                         sender.sendMessage(chatPrefix + "You must specify a command to run when disabled");
                     } else if (args[1].equalsIgnoreCase("clear")) {
-                        // Clear the whole goal
+                        donationtracker.goals.get(goalName).abandon();
+                        donationtracker.goals.remove(goalName);
+                        donationtracker.goalsBackwards.remove(goalName);
+                        donationtracker.getConfig().set("goals." + goalName, null);
+                        donationtracker.saveConfig();
+                        sender.sendMessage(chatPrefix+"Cleared goal from config, and erased it from memory.");
                     }
                 }
             } else return false;
