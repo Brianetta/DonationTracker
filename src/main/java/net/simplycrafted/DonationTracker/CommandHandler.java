@@ -135,6 +135,10 @@ public class CommandHandler implements CommandExecutor {
                                 if (goal == null) {
                                     sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
                                     sender.sendMessage(chatPrefix + "Amount: $" + amount);
+                                    // use default value for days
+                                    int days = config.getInt("defaultgoaldays");
+                                    sender.sendMessage(chatPrefix + "Days: " + days);
+                                    goalConfig.set("days", days);
                                     goal = new Goal(goalConfig);
                                     donationtracker.goals.put(goalName,goal);
                                     donationtracker.goalsBackwards.put(goalName,goal);
