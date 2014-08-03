@@ -156,8 +156,9 @@ public class Database {
         try {
             sql = db_conn.prepareStatement("SELECT SUM(amount) " +
                     "FROM `" + prefix + "donation` " +
-                    "WHERE donationtime >= DATE_SUB(NOW(),INTERVAL ? DAY)");
-            sql.setInt(1,days);
+                    // Add WHERE clause only if days > 0. Zero now means "ever", and would ordinarily be meaningless.
+                    (days > 0 ? "WHERE donationtime >= DATE_SUB(NOW(),INTERVAL ? DAY)" : ""));
+            if (days > 0) sql.setInt(1,days);
             ResultSet resultSet = sql.executeQuery();
             if(resultSet.next()) {
                 returnval = (resultSet.getInt(1) >= money) ;

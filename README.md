@@ -16,7 +16,7 @@ Donations are made through the Enjin shop, and the Enjin plugin runs a specified
 
 Every so often (in the default config, every 12,000 ticks, which is ten minutes if there's no lag) the plugin will go through the goals that have been configured, and using the information about donations in the database, decide which to enable or disable.
 
-Each goal has a target amount, and a number of days. If the target amount has been donated between that many days ago and the present, the goal is considered reached.
+Each goal has a target amount, and a number of days. If the target amount has been donated between that many days ago and the present, the goal is considered reached. If that number is zero, the plugin acts as if it was infinitely large - that is to say, all donations ever are counted for that goal.
 
 Each goal also has two lists of commands - thse to run when the goal is reached, and those to run when the goal is lost. The commands can be any commands that are provided by a plugin (unfortunately, no built-in server commands can be used).
 

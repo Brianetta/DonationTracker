@@ -162,8 +162,8 @@ public class CommandHandler implements CommandExecutor {
                         // given "days" and a further arg, adjust the days
                         try {
                             Integer days = Integer.parseInt(args[2]);
-                            if (days <= 0) {
-                                sender.sendMessage(chatPrefix + "Amount must be a positive number");
+                            if (days < 0) {
+                                sender.sendMessage(chatPrefix + "Days must be a positive number, or 0 for \"forever\"");
                             } else {
                                 goalConfig.set("days", days);
                                 donationtracker.saveConfig();
@@ -229,7 +229,7 @@ public class CommandHandler implements CommandExecutor {
                     if (args[1].equalsIgnoreCase("amount")) {
                         sender.sendMessage(chatPrefix + "You must specify an amount in dollars");
                     } else if (args[1].equalsIgnoreCase("days")) {
-                        sender.sendMessage(chatPrefix + "You must specify a period in whole days");
+                        sender.sendMessage(chatPrefix + "You must specify a period in whole days, with 0 meaning \"forever\"");
                     } else if (args[1].equalsIgnoreCase("enable")) {
                         sender.sendMessage(chatPrefix + "You must specify a command to run when enabled");
                     } else if (args[1].equalsIgnoreCase("disable")) {
