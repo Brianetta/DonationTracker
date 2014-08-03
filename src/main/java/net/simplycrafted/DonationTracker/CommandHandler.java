@@ -10,6 +10,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -130,6 +131,7 @@ public class CommandHandler implements CommandExecutor {
                             } else {
                                 goalConfig.set("amount", amount);
                                 donationtracker.getConfig().set("goals." + goalName + ".amount", amount);
+                                donationtracker.saveConfig();
                                 Goal goal = donationtracker.goals.get(goalName);
                                 if (goal == null) {
                                     sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
@@ -153,6 +155,7 @@ public class CommandHandler implements CommandExecutor {
                             } else {
                                 goalConfig.set("days", days);
                                 donationtracker.getConfig().set("goals." + goalName + ".days", days);
+                                donationtracker.saveConfig();
                                 Goal goal = donationtracker.goals.get(goalName);
                                 if (goal == null) {
                                     sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
@@ -169,9 +172,33 @@ public class CommandHandler implements CommandExecutor {
                             sender.sendMessage(chatPrefix + "You must specify a valid number");
                         }
                     } else if (args[1].equalsIgnoreCase("enable")) {
-
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 2; i < args.length; i++) {
+                            stringBuilder.append(args[i]);
+                            if (i < args.length) {
+                                stringBuilder.append(" ");
+                            }
+                        }
+                        List<String> enableCommands =donationtracker.getConfig().getStringList("enable");
+                        enableCommands.add(stringBuilder.toString());
+                        goalConfig.set("enable", enableCommands);
+                        donationtracker.getConfig().set("enable", enableCommands);
+                        donationtracker.saveConfig();
+                        sender.sendMessage(chatPrefix + "Command added to goal's enable list in config. Check days and amount, then reload config to enact changes.");
                     } else if (args[1].equalsIgnoreCase("disable")) {
-
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 2; i < args.length; i++) {
+                            stringBuilder.append(args[i]);
+                            if (i < args.length) {
+                                stringBuilder.append(" ");
+                            }
+                        }
+                        List<String> disableCommands =donationtracker.getConfig().getStringList("disable");
+                        disableCommands.add(stringBuilder.toString());
+                        goalConfig.set("disable", disableCommands);
+                        donationtracker.getConfig().set("disable", disableCommands);
+                        donationtracker.saveConfig();
+                        sender.sendMessage(chatPrefix + "Command added to goal's disable list in config. Check days and amount, then reload config to enact changes.");
                     } else if (args[1].equalsIgnoreCase("clear")) {
 
                     }
