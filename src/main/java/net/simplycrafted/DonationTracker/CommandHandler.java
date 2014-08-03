@@ -205,19 +205,14 @@ public class CommandHandler implements CommandExecutor {
                 } else {
                     if (args[1].equalsIgnoreCase("amount")) {
                         sender.sendMessage(chatPrefix + "You must specify an amount in dollars");
-                        return true;
                     } else if (args[1].equalsIgnoreCase("days")) {
                         sender.sendMessage(chatPrefix + "You must specify a period in whole days");
-                        return true;
                     } else if (args[1].equalsIgnoreCase("enable")) {
                         sender.sendMessage(chatPrefix + "You must specify a command to run when enabled");
-                        return true;
                     } else if (args[1].equalsIgnoreCase("disable")) {
                         sender.sendMessage(chatPrefix + "You must specify a command to run when disabled");
-                        return true;
                     } else if (args[1].equalsIgnoreCase("clear")) {
                         // Clear the whole goal
-                        return true;
                     }
                 }
             } else return false;
