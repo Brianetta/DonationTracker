@@ -120,6 +120,8 @@ The config looks like this by default:
         user: donationtracker
         password: secret
     period: 12000
+    defaultgoaldays: 30
+    donationthanks: bc Thanks to PLAYER for donating $AMOUNT to the server!
     goals:
 
 The `mysql` section is configured as required. The period is the number of ticks between goal assessments (12,000 is 10 minutes at full TPS).
@@ -133,6 +135,8 @@ The goals need to be added. Here's what the config looks like with two goals add
         user: donationtracker
         password: secret
     period: 12000
+    defaultgoaldays: 30
+    donationthanks: bc Thanks to PLAYER for donating $AMOUNT to the server!
     goals:
         flight:
             days: 1
@@ -154,10 +158,6 @@ The goals need to be added. Here's what the config looks like with two goals add
             disable:    
                 - bc Chest shops disabled!
                 - pex group Player remove ChestShop.shop.create.*
-
-## Reconfiguring ##
-
-Until the plugin is complete, for testing purposes it will be necessary to us Plugin Manager to unload the plugin (`/pm unload DOnationTracker`), edit or replace the config file, then re-load the plugin (`/pm load DOnationTracker-1.0`).
 
 ## Permissions ##
 
