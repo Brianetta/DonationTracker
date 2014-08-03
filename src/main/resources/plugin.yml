@@ -13,7 +13,11 @@ commands:
         permission: donationtracker.goals
         usage: |
             /<command> <goal_name>
-            /<command> <goal_name> <days> <amount>
+            /<command> <goal_name> days <days>
+            /<command> <goal_name> amount <amount>
+            /<command> <goal_name> enable <command>
+            /<command> <goal_name> disable <command>
+            /<command> <goal_name> clear [command]
             /<command> <goal_name> delete
     ddbg:
         description: debug command (development only)

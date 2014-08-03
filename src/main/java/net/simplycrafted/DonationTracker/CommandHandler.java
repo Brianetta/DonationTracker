@@ -10,6 +10,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,14 +30,15 @@ import java.util.UUID;
 public class CommandHandler implements CommandExecutor {
 
     String chatPrefix = "" + ChatColor.BOLD + ChatColor.GOLD + "[DC] " + ChatColor.RESET;
+    DonationTracker donationtracker = DonationTracker.getInstance();
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Database database = new Database();
-        UUID uuid = null;
-        Double amount;
 
         if (command.getName().equalsIgnoreCase("donation")) {
             if (args.length == 2) {
+                UUID uuid = null;
+                Double amount;
                 try {
                     // See if the argument is a UUID
                     uuid = UUID.fromString(args[0]);
@@ -66,25 +68,25 @@ public class CommandHandler implements CommandExecutor {
                     sender.sendMessage(String.format(chatPrefix + "Logged $%.2f against UUID %s",amount,uuid.toString()));
 
                     // Get the donationthanks command from the config and, um, run it...
-                    String thankCommand = DonationTracker.getInstance().getConfig().getString("donationthanks");
-                    thankCommand = thankCommand.replaceFirst("PLAYER", DonationTracker.getInstance().getServer().getOfflinePlayer(uuid).getName()).replaceFirst("AMOUNT", amount.toString());
+                    String thankCommand = donationtracker.getConfig().getString("donationthanks");
+                    thankCommand = thankCommand.replaceFirst("PLAYER", donationtracker.getServer().getOfflinePlayer(uuid).getName()).replaceFirst("AMOUNT", amount.toString());
                     String tcarg0 = thankCommand.substring(0, thankCommand.indexOf(' '));
                     String[] tcargs = thankCommand.substring(thankCommand.indexOf(' ') + 1).split(" ");
                     // Have the plugin re-test all goals now
-                    PluginCommand pluginCommand = DonationTracker.getInstance().getServer().getPluginCommand(tcarg0);
+                    PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(tcarg0);
                     if (pluginCommand != null) {
-                        pluginCommand.execute(DonationTracker.getInstance().getServer().getConsoleSender(), tcarg0, tcargs);
+                        pluginCommand.execute(donationtracker.getServer().getConsoleSender(), tcarg0, tcargs);
                     } else {
-                        DonationTracker.getInstance().getLogger().info("Invalid command: " + tcarg0);
+                        donationtracker.getLogger().info("Invalid command: " + tcarg0);
                     }
-                    DonationTracker.getInstance().assess();
+                    donationtracker.assess();
                 }
             } else return false;
             return true;
         }
 
         if (command.getName().equalsIgnoreCase("donorgoal")) {
-            Configuration config = DonationTracker.getInstance().getConfig();
+            Configuration config = donationtracker.getConfig();
             if (args.length == 0) {
                 // List the goals
                 sender.sendMessage(chatPrefix + "Donation goals:");
@@ -96,10 +98,11 @@ public class CommandHandler implements CommandExecutor {
                     );
                 }
             } else if (args.length == 1) {
-                ConfigurationSection goalConfig = config.getConfigurationSection("goals."+args[0]);
+                String goalName = args[0];
+                ConfigurationSection goalConfig = config.getConfigurationSection("goals." + goalName);
                 if (goalConfig != null) {
                     sender.sendMessage(chatPrefix + String.format("Goal %s: $%.2f in %d days",
-                                    args[0],
+                                    goalName,
                                     goalConfig.getDouble("amount"),
                                     goalConfig.getInt("days"))
                     );
@@ -110,7 +113,108 @@ public class CommandHandler implements CommandExecutor {
                         sender.sendMessage(chatPrefix + "Withdraw: " + ChatColor.WHITE + commandToDisable);
                     }
                 } else {
-                    sender.sendMessage(chatPrefix + "Goal " + args[0] + " not found");
+                    sender.sendMessage(chatPrefix + "Goal " + goalName + " not found. You can create it by setting days or amount");
+                }
+            } else if ((args.length > 1) && (args[1].toLowerCase().matches("^(amount|days|enable|disable|clear)$"))) {
+                String goalName = args[0];
+                ConfigurationSection goalConfig = config.getConfigurationSection("goals." + goalName);
+                if (goalConfig == null) {
+                    goalConfig = config.createSection("goals." + goalName);
+                }
+                if (args.length > 2) {
+                    if (args[1].equalsIgnoreCase("amount")) {
+                        try {
+                            int amount;
+                            amount = Integer.parseInt(args[2]);
+                            if (amount <= 0.0) {
+                                sender.sendMessage(chatPrefix + "Amount must be a positive number");
+                            } else {
+                                goalConfig.set("amount", amount);
+                                donationtracker.saveConfig();
+                                Goal goal = donationtracker.goals.get(goalName);
+                                if (goal == null) {
+                                    sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
+                                    sender.sendMessage(chatPrefix + "Amount: $" + amount);
+                                    goal = new Goal(goalConfig);
+                                    donationtracker.goals.put(goalName,goal);
+                                    donationtracker.goalsBackwards.put(goalName,goal);
+                                } else {
+                                    sender.sendMessage(chatPrefix + "Amount: $" + amount);
+                                    goal.money = amount;
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            sender.sendMessage(chatPrefix + "You must specify a valid number");
+                        }
+                    } else if (args[1].equalsIgnoreCase("days")) {
+                        try {
+                            Integer days = Integer.parseInt(args[2]);
+                            if (days <= 0) {
+                                sender.sendMessage(chatPrefix + "Amount must be a positive number");
+                            } else {
+                                goalConfig.set("days", days);
+                                donationtracker.saveConfig();
+                                Goal goal = donationtracker.goals.get(goalName);
+                                if (goal == null) {
+                                    sender.sendMessage(chatPrefix + "Creating new goal: " + goalName);
+                                    sender.sendMessage(chatPrefix + "Days: " + days);
+                                    goal = new Goal(goalConfig);
+                                    donationtracker.goals.put(goalName,goal);
+                                    donationtracker.goalsBackwards.put(goalName,goal);
+                                } else {
+                                    sender.sendMessage(chatPrefix + "Days: " + days);
+                                    goal.days = days;
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            sender.sendMessage(chatPrefix + "You must specify a valid number");
+                        }
+                    } else if (args[1].equalsIgnoreCase("enable")) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 2; i < args.length; i++) {
+                            stringBuilder.append(args[i]);
+                            if (i < args.length) {
+                                stringBuilder.append(" ");
+                            }
+                        }
+                        List<String> enableCommands = goalConfig.getStringList("enable");
+                        enableCommands.add(stringBuilder.toString());
+                        goalConfig.set("enable", enableCommands);
+                        donationtracker.saveConfig();
+                        sender.sendMessage(chatPrefix + "Command added to goal's enable list in config. Check days and amount, then reload config to enact changes.");
+                    } else if (args[1].equalsIgnoreCase("disable")) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 2; i < args.length; i++) {
+                            stringBuilder.append(args[i]);
+                            if (i < args.length) {
+                                stringBuilder.append(" ");
+                            }
+                        }
+                        List<String> disableCommands = goalConfig.getStringList("disable");
+                        disableCommands.add(stringBuilder.toString());
+                        goalConfig.set("disable", disableCommands);
+                        donationtracker.saveConfig();
+                        sender.sendMessage(chatPrefix + "Command added to goal's disable list in config. Check days and amount, then reload config to enact changes.");
+                    } else if (args[1].equalsIgnoreCase("clear")) {
+                        sender.sendMessage(chatPrefix + "The clear command doesn't have any options yet.");
+                    }
+                } else {
+                    if (args[1].equalsIgnoreCase("amount")) {
+                        sender.sendMessage(chatPrefix + "You must specify an amount in dollars");
+                    } else if (args[1].equalsIgnoreCase("days")) {
+                        sender.sendMessage(chatPrefix + "You must specify a period in whole days");
+                    } else if (args[1].equalsIgnoreCase("enable")) {
+                        sender.sendMessage(chatPrefix + "You must specify a command to run when enabled");
+                    } else if (args[1].equalsIgnoreCase("disable")) {
+                        sender.sendMessage(chatPrefix + "You must specify a command to run when disabled");
+                    } else if (args[1].equalsIgnoreCase("clear")) {
+                        donationtracker.goals.get(goalName).abandon();
+                        donationtracker.goals.remove(goalName);
+                        donationtracker.goalsBackwards.remove(goalName);
+                        donationtracker.getConfig().set("goals." + goalName, null);
+                        donationtracker.saveConfig();
+                        sender.sendMessage(chatPrefix+"Cleared goal from config, and erased it from memory.");
+                    }
                 }
             } else return false;
             return true;
@@ -132,17 +236,20 @@ public class CommandHandler implements CommandExecutor {
                     }
                 } else if (args[0].equalsIgnoreCase("assess")) {
                     // Iterate over all the goals
-                    DonationTracker.getInstance().assess();
+                    donationtracker.assess();
                     return true;
                 } else if (args[0].equalsIgnoreCase("withdraw")) {
                     // Iterate over all the goals
-                    DonationTracker.getInstance().withdraw();
+                    donationtracker.withdraw();
                     return true;
                 } else if (args[0].equalsIgnoreCase("reload")) {
                     // Reload the plugin
-                    DonationTracker.getInstance().reload();
+                    donationtracker.reload();
                     return true;
-                } else {
+                } else if (args[0].equalsIgnoreCase("save")) {
+                    // Reload the plugin
+                    donationtracker.saveConfig();
+                    return true;                } else {
                     sender.sendMessage("Unknown debug command.");
                 }
             } else {
