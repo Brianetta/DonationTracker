@@ -175,7 +175,7 @@ public class Database {
         // Reconnect the database if necessary
         if (connectionIsDead()) connect();
         PreparedStatement sql;
-        double returnval = 0;
+        double returnval = 0.0;
         try {
             sql = db_conn.prepareStatement("SELECT SUM(amount) " +
                     "FROM `" + prefix + "donation` " +
@@ -184,7 +184,7 @@ public class Database {
             if (days > 0) sql.setInt(1,days);
             ResultSet resultSet = sql.executeQuery();
             if(resultSet.next()) {
-                returnval = resultSet.getDouble(1);
+                returnval += resultSet.getDouble(1);
             }
             resultSet.close();
             sql.close();

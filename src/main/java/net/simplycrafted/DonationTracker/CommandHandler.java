@@ -252,6 +252,30 @@ public class CommandHandler implements CommandExecutor {
             return true;
         }
 
+        if (command.getName().equalsIgnoreCase("donationpool")) {
+            Integer days;
+            if (args.length == 0) {
+                // Get the default, since no number was specified
+                days = donationtracker.getConfig().getInt("defaultgoaldays");
+            } else {
+                try {
+                    // Use the number specified
+                    days = Integer.parseInt(args[0]);
+                    donationtracker.getLogger().info(days.toString());
+                } catch (IllegalArgumentException e) {
+                    // Number specified was useless; use default instead
+                    sender.sendMessage(chatPrefix + "Not a valid number ; using default");
+                    days = donationtracker.getConfig().getInt("defaultgoaldays");
+                }
+            }
+            if (days == 0) {
+                sender.sendMessage(chatPrefix + String.format("Donation pool for all time: %.00f",database.getPool(0)));
+            } else {
+                sender.sendMessage(chatPrefix + String.format("Donation pool for past %d days: %.00f",days,database.getPool(days)));
+            }
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("ddbg")) {
             // Debugging and testing only - to be removed before release
             if (args.length > 0) {
