@@ -276,7 +276,7 @@ public class CommandHandler implements CommandExecutor {
             return true;
         }
 
-        if (command.getName().equalsIgnoreCase("ddbg")) {
+        if (command.getName().equalsIgnoreCase("dgadmin")) {
             // Debugging and testing only - to be removed before release
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("advance")) {
@@ -307,7 +307,7 @@ public class CommandHandler implements CommandExecutor {
                     donationtracker.saveConfig();
                     return true;
                 } else {
-                    sender.sendMessage("Unknown debug command.");
+                    sender.sendMessage("Unknown admin command.");
                 }
             } else {
                 return false;

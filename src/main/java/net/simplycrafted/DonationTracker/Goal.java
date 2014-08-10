@@ -61,15 +61,25 @@ public class Goal {
         // Build lists of Commands to be run when enabled
         for (String commandString : goalConfig.getStringList("enable")) {
             command = new Command();
-            command.arg0 = commandString.substring(0, commandString.indexOf(' '));
-            command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
+            if (commandString.indexOf(" ") > 0) {
+                command.arg0 = commandString.substring(0, commandString.indexOf(' '));
+                command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
+            } else {
+                command.arg0 = commandString;
+                command.args = null;
+            }
             commandsOnEnabled.add(command);
         }
         // Build lists of Commands to be run when disabled
         for (String commandString : goalConfig.getStringList("disable")) {
             command = new Command();
-            command.arg0 = commandString.substring(0, commandString.indexOf(' '));
-            command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
+            if (commandString.indexOf(" ") > 0) {
+                command.arg0 = commandString.substring(0, commandString.indexOf(' '));
+                command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
+            } else {
+                command.arg0 = commandString;
+                command.args = null;
+            }
             commandsOnDisabled.add(command);
         }
     }

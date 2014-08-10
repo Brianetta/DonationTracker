@@ -76,30 +76,30 @@ Totally delete the chestshops goal:
 
 **You can create a new goal be specifying either a donation amount or a number of days.**
 
-### /ddbg ###
+### /dgadmin ###
 
 This command has several sub-commands, which are used for testing. Some of these commands will remain in the plugin (perhaps after being renamed) while others will be removed.
 
 **Examples:**
 
-    /ddbg advance 1
-    /ddbg advance 30    
+    /dgadmin advance 1
+    /dgadmin advance 30    
 
 This command simulated the advancing of time through multiples of 24 hours, by subtracting the number of days from the times of all the donations in the database. They all move that many days back in time, allowing testers to test how goals and donatione behave.
 
-    /ddbg assess
+    /dgadmin assess
 
 This command causes the plugin to re-assess all the goals. It is run every ten minutes or so anyway, but is useful after advancing the donations.
 
-    /ddbg withdraw
+    /dgadmin withdraw
 
-This command causes all the goals to be abandoned, as if there have been no donations at all. Each goal that has been reached will be considered lost, and its disable commands will be run. It can be un-done with `/ddbg assess`, since it doesn't touch the actual donations. It is run whenever the plugin is disabled, to allow changes to be made to the configuration in safety.
+This command causes all the goals to be abandoned, as if there have been no donations at all. Each goal that has been reached will be considered lost, and its disable commands will be run. It can be un-done with `/dgadmin assess`, since it doesn't touch the actual donations. It is run whenever the plugin is disabled, to allow changes to be made to the configuration in safety.
 
-    /ddbg reload
+    /dgadmin reload
 
 This command causes the plugin to unload all goals, reload the configuration from disk, and re-initialise all internal storage with new goal information from the newly loaded configuration.
 
-    /ddbg save
+    /dgadmin save
 
 This immediately writes the plugin's config file to disk. It shouldn't be needed, since the plugin does this itself every time it makes changes.
 

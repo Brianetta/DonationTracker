@@ -51,7 +51,7 @@ public class DonationTracker extends JavaPlugin {
     public void withdraw() {
         for(String key: goals.keySet())
         {
-            Goal goal = goals.get(key);
+            Goal goal = goalsBackwards.get(key);
             if (goal.reached()) {
                 getLogger().info("Abandoning " + goal.getName());
                 goal.abandon();
