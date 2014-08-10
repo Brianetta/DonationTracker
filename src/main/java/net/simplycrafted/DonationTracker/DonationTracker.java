@@ -72,7 +72,7 @@ public class DonationTracker extends JavaPlugin {
         getCommand("donation").setExecutor(commandHandler);
         getCommand("donorgoal").setExecutor(commandHandler);
         getCommand("donationpool").setExecutor(commandHandler);
-        getCommand("ddbg").setExecutor(commandHandler);
+        getCommand("dgadmin").setExecutor(commandHandler);
 
         // Load the goals from the config file
         ConfigurationSection goalConfig;
