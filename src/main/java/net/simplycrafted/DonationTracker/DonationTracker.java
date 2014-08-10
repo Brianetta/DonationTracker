@@ -49,7 +49,7 @@ public class DonationTracker extends JavaPlugin {
 
     // Withdraw all rewards (used when closing down the plugin).
     public void withdraw() {
-        for(String key: goals.keySet())
+        for(String key: goalsBackwards.keySet())
         {
             Goal goal = goalsBackwards.get(key);
             if (goal.reached()) {
