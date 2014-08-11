@@ -30,11 +30,14 @@ public class DonationTracker extends JavaPlugin {
     Map<String,Goal> goalsBackwards;
 
     // Determine which goals need to be rewarded or otherwise
-    public void assess() {
+    public void assess(boolean atDonationTime) {
         for(String key: goals.keySet())
         {
             Goal goal = goals.get(key);
             if (goal.reached()) {
+                if (atDonationTime) {
+                    goal.ondonate();
+                }
                 goal.enable();
             }
         }
@@ -92,7 +95,7 @@ public class DonationTracker extends JavaPlugin {
         scheduler.scheduleSyncRepeatingTask(this,new Runnable() {
             @Override
             public void run() {
-                assess();
+                assess(false);
             }
         },100,getConfig().getInt("period"));
     }
@@ -129,6 +132,6 @@ public class DonationTracker extends JavaPlugin {
             goalsBackwards.put(key, goal);
         }
         // re-assess all goals, and reward
-        assess();
+        assess(false);
     }
 }

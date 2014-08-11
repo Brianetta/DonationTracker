@@ -124,15 +124,6 @@ public class Goal {
             return;
         }
         // Enable rewards
-        donationtracker.getLogger().info("Enabling rewards: " + name);
-        for (Command command : commandsOnEnabled) {
-            PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
-            if (pluginCommand != null) {
-                pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
-            } else {
-                donationtracker.getLogger().info("Invalid command: " + command.arg0);
-            }
-        }
         for (Command command : commandsOnDonate) {
             PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
             if (pluginCommand != null) {

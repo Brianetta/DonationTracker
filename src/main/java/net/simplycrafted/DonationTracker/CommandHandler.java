@@ -79,7 +79,7 @@ public class CommandHandler implements CommandExecutor {
                     } else {
                         donationtracker.getLogger().info("Invalid command: " + tcarg0);
                     }
-                    donationtracker.assess();
+                    donationtracker.assess(true);
                 }
             } else return false;
             return true;
@@ -292,7 +292,7 @@ public class CommandHandler implements CommandExecutor {
                     }
                 } else if (args[0].equalsIgnoreCase("assess")) {
                     // Iterate over all the goals
-                    donationtracker.assess();
+                    donationtracker.assess(false);
                     return true;
                 } else if (args[0].equalsIgnoreCase("withdraw")) {
                     // Iterate over all the goals
