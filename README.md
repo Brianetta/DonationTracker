@@ -74,7 +74,7 @@ Totally delete the chestshops goal:
 
     /donorgoal chestshops clear
 
-**You can create a new goal be specifying either a donation amount or a number of days.**
+**You can create a new goal by specifying either a donation amount or a number of days.**
 
 ### /dgadmin ###
 
@@ -103,9 +103,27 @@ This command causes the plugin to unload all goals, reload the configuration fro
 
 This immediately writes the plugin's config file to disk. It shouldn't be needed, since the plugin does this itself every time it makes changes.
 
+### /donationpool ###
+
+This command shows how much has been donated to the server.
+
+**Examples:**
+
+    /donationpool
+
+Show total donations over the last 30 days (by default).
+
+    /donationpool 5
+    
+Show total donations over the last 5 days.
+
+    /donationpool 0
+
+Show total donations since records began.
+
 ### Future commands ###
 
-We need commands to reload the config on the fly, as well as interrogation commands to find out where the pot is over the last *n* days, and who was the biggest donator over the last *n* days.
+We need commands to see who was the biggest donator over the last *n* days.
 
 We also need additional features, such as signwriting or announcements for individual or cumulative donations.
 
