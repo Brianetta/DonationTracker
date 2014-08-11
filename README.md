@@ -167,6 +167,8 @@ The goals need to be added. Here's what the config looks like with two goals add
                 - bc Fly mode disabled!
                 - pex group Player remove essentials.fly
                 - pex group Player remove essentials.fly.safelogin
+            ondonate:
+                - bc This was due to a donation that just happened.
         chestshop:
             days: 30
             amount: 50

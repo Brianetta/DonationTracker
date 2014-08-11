@@ -43,6 +43,7 @@ public class Goal {
 
     private Set<Command> commandsOnEnabled = new HashSet<>();
     private Set<Command> commandsOnDisabled = new HashSet<>();
+    private Set<Command> commandsOnDonate = new HashSet<>();
 
     // Constructor
     public Goal(ConfigurationSection goalConfig) {
@@ -82,6 +83,18 @@ public class Goal {
             }
             commandsOnDisabled.add(command);
         }
+        // Build lists of Commands to be run only on donation, not reload, etc
+        for (String commandString : goalConfig.getStringList("atdonate")) {
+            command = new Command();
+            if (commandString.indexOf(" ") > 0) {
+                command.arg0 = commandString.substring(0, commandString.indexOf(' '));
+                command.args = commandString.substring(commandString.indexOf(' ') + 1).split(" ");
+            } else {
+                command.arg0 = commandString;
+                command.args = null;
+            }
+            commandsOnDonate.add(command);
+        }
     }
 
     public void enable() {
@@ -93,13 +106,41 @@ public class Goal {
         // Enable rewards
         donationtracker.getLogger().info("Enabling rewards: " + name);
         for (Command command : commandsOnEnabled) {
-                PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
-                if (pluginCommand != null) {
-                    pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
-                } else {
-                    donationtracker.getLogger().info("Invalid command: " + command.arg0);
-                }
+            PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
+            if (pluginCommand != null) {
+                pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
+            } else {
+                donationtracker.getLogger().info("Invalid command: " + command.arg0);
             }
+        }
+        // Record that rewards have been enabled
+        database.recordReward(this.name,true);
+    }
+
+    public void ondonate() {
+        Database database = new Database();
+        // Check whether rewards have been enabled
+        if (database.rewardsAreEnabled(this.name)) {
+            return;
+        }
+        // Enable rewards
+        donationtracker.getLogger().info("Enabling rewards: " + name);
+        for (Command command : commandsOnEnabled) {
+            PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
+            if (pluginCommand != null) {
+                pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
+            } else {
+                donationtracker.getLogger().info("Invalid command: " + command.arg0);
+            }
+        }
+        for (Command command : commandsOnDonate) {
+            PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
+            if (pluginCommand != null) {
+                pluginCommand.execute(donationtracker.getServer().getConsoleSender(), command.arg0, command.args);
+            } else {
+                donationtracker.getLogger().info("Invalid command: " + command.arg0);
+            }
+        }
         // Record that rewards have been enabled
         database.recordReward(this.name,true);
     }
