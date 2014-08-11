@@ -119,11 +119,10 @@ public class Goal {
 
     public void ondonate() {
         Database database = new Database();
-        // Check whether rewards have been enabled
         if (database.rewardsAreEnabled(this.name)) {
             return;
         }
-        // Enable rewards
+        // Enable one-off rewards
         for (Command command : commandsOnDonate) {
             PluginCommand pluginCommand = donationtracker.getServer().getPluginCommand(command.arg0);
             if (pluginCommand != null) {
@@ -132,8 +131,6 @@ public class Goal {
                 donationtracker.getLogger().info("Invalid command: " + command.arg0);
             }
         }
-        // Record that rewards have been enabled
-        database.recordReward(this.name,true);
     }
 
     public void abandon() {
