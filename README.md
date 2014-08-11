@@ -18,17 +18,17 @@ Every so often (in the default config, every 12,000 ticks, which is ten minutes 
 
 Each goal has a target amount, and a number of days. If the target amount has been donated between that many days ago and the present, the goal is considered reached. If that number is zero, the plugin acts as if it was infinitely large - that is to say, all donations ever are counted for that goal.
 
-Each goal also has two lists of commands - thse to run when the goal is reached, and those to run when the goal is lost. The commands can be any commands that are provided by a plugin (unfortunately, no built-in server commands can be used).
+Each goal also has two lists of commands - those to run when the goal is reached, and those to run when the goal is lost. The commands can be any commands that are provided by a plugin (unfortunately, no built-in server commands can be used).
 
 The plugin will also store in the database information about which goals have been reached, so that goal setup commands aren't run multiple times.
 
 ## Commands ##
 
-There are currently three primary commands (although this will change as delvelopment progresses).
+There are currently three primary commands (although this will change as development progresses).
 
 ### /donation ###
 
-This command is intended to be run by the Enin plugin when somebody donates through the Enjin shop. It can also be run on demand by players, for example of an out-of-band cash payment is made directly to Justin, we can use this command frm the console to record it. It takes two arguments.
+This command is intended to be run by the Enin plugin when somebody donates through the Enjin shop. It can also be run on demand by players, for example of an out-of-band cash payment is made directly to Justin, we can use this command from the console to record it. It takes two arguments.
 
 The first is the name or UUID of a player. If it's a name, then it must be of a player who has previously joined the server, so that the plugin can find the UUID.
 
@@ -85,7 +85,7 @@ This command has several sub-commands, which are used for testing. Some of these
     /dgadmin advance 1
     /dgadmin advance 30    
 
-This command simulated the advancing of time through multiples of 24 hours, by subtracting the number of days from the times of all the donations in the database. They all move that many days back in time, allowing testers to test how goals and donatione behave.
+This command simulated the advancing of time through multiples of 24 hours, by subtracting the number of days from the times of all the donations in the database. They all move that many days back in time, allowing testers to test how goals and donations behave.
 
     /dgadmin assess
 
