@@ -1,6 +1,6 @@
 **Please note: This repository was private, for use by a specific server. This documentation is brief, and was intended to be read by the staff of that server, rather than the general public. As a result, ionformation may be missing, or may refer to specifics details of a private server.**
 
-The plugin was never installed on the server, and is provide dhere as-is in the hopes that it proves useful. I am releasing it under the GNU General Public Licenses, version 3.0 or (at your option) any later version.
+The plugin was never installed on the server, and is provided here as-is in the hopes that it proves useful. I am releasing it under the GNU General Public License, version 3.0 or (at your option) any later version.
 ---
 
 # DonationTracker #
@@ -33,7 +33,7 @@ There are currently three primary commands (although this will change as develop
 
 ### /donation ###
 
-This command is intended to be run by the Enin plugin when somebody donates through the Enjin shop. It can also be run on demand by players, for example of an out-of-band cash payment is made directly to Justin, we can use this command from the console to record it. It takes two arguments.
+This command is intended to be run by the Enjin plugin when somebody donates through the Enjin shop. It can also be run on demand by players, for example of an out-of-band cash payment is made directly to Justin, we can use this command from the console to record it. It takes two arguments.
 
 The first is the name or UUID of a player. If it's a name, then it must be of a player who has previously joined the server, so that the plugin can find the UUID.
 
