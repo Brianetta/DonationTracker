@@ -1,3 +1,8 @@
+**Please note: This repository was private, for use by a specific server. This documentation is brief, and was intended to be read by the staff of that server, rather than the general public. As a result, ionformation may be missing, or may refer to specifics details of a private server.**
+
+The plugin was never installed on the server, and is provide dhere as-is in the hopes that it proves useful. I am releasing it under the GNU General Public Licenses, version 3.0 or (at your option) any later version.
+---
+
 # DonationTracker #
 
 A Bukkit plugin for handling pool-based donations and rewards, in line with recent clarfification of the Mojang EULA with respect to the funding of Minecraft servers by their players.
